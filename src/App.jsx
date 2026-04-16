@@ -381,7 +381,6 @@ export default function CoSQuiz() {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailSubmitting, setEmailSubmitting] = useState(false);
   const [emailError, setEmailError] = useState(false);
-  const [linkedInCopied, setLinkedInCopied] = useState(false);
   const [answerHistory, setAnswerHistory] = useState([]); // [{type, prevScores}] for back button
 
   // Fix isMobile on resize
@@ -747,15 +746,6 @@ export default function CoSQuiz() {
       setEmailSubmitting(false);
     };
 
-    const handleLinkedInShare = () => {
-      const dominantLabel = dominant.map(k => archetypes[k].short).join(" & ");
-      const text = `I just found out I'm a ${dominantLabel} Chief of Staff.\n\nWhat kind would you be? Take the quiz: cosassessment.com/quiz`;
-      navigator.clipboard.writeText(text).then(() => {
-        setLinkedInCopied(true);
-        setTimeout(() => setLinkedInCopied(false), 2500);
-      }).catch(() => {});
-    };
-
     return (
       <div style={base}>
         <div style={{ maxWidth: 620, width: "100%" }}>
@@ -816,7 +806,7 @@ export default function CoSQuiz() {
           </div>
 
           {/* Email capture */}
-          <div style={{ marginBottom: 28, padding: "20px", background: "#111110", border: `1px solid ${archetypes[dominant[0]].color}33` }}>
+          <div id="email-capture" style={{ marginBottom: 28, padding: "20px", background: "#111110", border: `1px solid ${archetypes[dominant[0]].color}33` }}>
             {emailSubmitted ? (
               <div style={{ textAlign: "center", padding: "8px 0" }}>
                 <div style={{ fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", color: archetypes[dominant[0]].color, marginBottom: 8 }}>
@@ -1043,18 +1033,21 @@ export default function CoSQuiz() {
               Take the full hiring assessment →
             </a>
             <button
-              onClick={handleLinkedInShare}
+              onClick={() => {
+                const el = document.getElementById("email-capture");
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
               style={{
                 padding: "16px 24px",
-                background: linkedInCopied ? "#1A2A1C" : "transparent",
-                color: linkedInCopied ? "#7EB8A4" : "#C8C0B8",
+                background: emailSubmitted ? "#1A2A1C" : "transparent",
+                color: emailSubmitted ? "#7EB8A4" : "#C8C0B8",
                 fontFamily: "Georgia, serif", fontSize: 15,
-                border: `1px solid ${linkedInCopied ? "#2A4A2E" : "#2A2A28"}`,
+                border: `1px solid ${emailSubmitted ? "#2A4A2E" : "#2A2A28"}`,
                 cursor: "pointer", transition: "all 0.2s",
                 width: isMobile ? "100%" : "auto",
               }}
             >
-              {linkedInCopied ? "Copied for LinkedIn ✓" : "Share on LinkedIn"}
+              {emailSubmitted ? "Results sent ✓" : "Email me my results"}
             </button>
             <button
               onClick={handleRestart}
